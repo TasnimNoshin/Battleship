@@ -1,0 +1,297 @@
+\documentclass[12pt]{article}
+
+\usepackage{graphicx}
+\usepackage{paralist}
+\usepackage{amsfonts}
+
+\oddsidemargin 0mm
+\evensidemargin 0mm
+\textwidth 150mm
+\textheight 200mm
+\renewcommand\baselinestretch{1.0}
+
+\pagestyle {plain}
+\pagenumbering{arabic}
+
+\newcounter{stepnum}
+
+\title{Assignment 5 Specification}
+\author{Tasnim Bari Noshin (noshint)}
+
+\begin {document}
+
+\maketitle
+
+The purpose of this software design exercise is to design, specify, implement and test a module for storing the state
+of an Battelship game.  The game board is represented as a two dimensional sequence, with the first dimension the row and
+the second dimension the column.  The indexes are relative to the upper left hand corner of the board; that is, row 0
+and column 0 are at the top left.
+
+\section* {Constants Module}
+
+\subsection*{Module}
+
+Constants
+
+\subsection* {Uses}
+
+N/A
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Constants}
+
+MAX\_BOARD\_ROWS = 9 
+\newline
+MAX\_BOARD\_COLUMN = 11
+\newline
+SHIP\_NUMBER = 5
+
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+none
+
+\newpage
+
+\section* {Point ADT Module}
+
+\subsection*{Template Module}
+pointADT
+
+\subsection* {Uses}
+N/A
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+PointT = ?
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | l |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+new PointT & integer, integer & PointT & ~\\
+\hline
+xcrd & ~ & integer & ~\\
+\hline
+ycrd & ~ & integer & ~\\
+\hline
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+$xc$: integer\\
+$yc$: integer
+
+\subsubsection* {State Invariant}
+None
+
+\subsubsection* {Assumptions}
+None
+
+\subsubsection* {Access Routine Semantics}
+
+new PointT ($x, y$):
+\begin{itemize}
+\item transition: $xc, yc := x, y$
+\item output: $out := \mathit{self}$
+\item exception: none
+\end{itemize}
+
+\noindent xcrd:
+\begin{itemize}
+\item output: $out := xc$
+\item exception: none
+\end{itemize}
+
+\noindent ycrd:
+\begin{itemize}
+\item output: $out := yc$
+\item exception: none
+\end{itemize}
+
+\newpage
+
+\section* {Board ADT Module}
+
+\subsection*{Template Module}
+
+BoardADT
+
+\subsection* {Uses}
+
+Constants, PointADT
+
+\subsection* {Syntax}
+
+\subsubsection* {Exported Types}
+
+BoardT = ? \\
+PointT = \{ FREE, SHIP, MISS, HIT \} \\
+
+\subsubsection* {Exported Access Programs}
+
+\begin{tabular}{| l | l | l | p{5cm} |}
+\hline
+\textbf{Routine name} & \textbf{In} & \textbf{Out} & \textbf{Exceptions}\\
+\hline
+new BoardT & ~ & BoardT & ~\\
+\hline
+placeShip & integer, PointT, PointT & sequence of PointT & OutOfBoundsException, InvalidMoveException, InvalidShipException\\
+\hline
+shot & PointT, BoardT & ~ & OutOfBoundsException, InvalidMoveException\\
+\hline
+getTraceShot & ~ & sequence of PointT & ~\\
+\hline 
+getBoard & ~ & sequence of sequence of PointT & ~\\
+\hline 
+getShipList & ~ & sequence of sequence of PointT & ~\\
+\hline
+addToShipList & sequence of PointT & ~ & ~\\
+\hline
+hasSunk & sequence of PointT & ~ & ~\\
+\hline
+isLosing & ~ & boolean & InvalidShipException\\
+\hline
+turn & ~ & boolean & ~\\
+\hline
+chances & ~ & real & ~\\
+\hline
+
+\end{tabular}
+
+\subsection* {Semantics}
+
+\subsubsection* {State Variables}
+
+traceShot : sequence of PointT \\
+board : sequence of sequence of PointT\\
+shipList : sequence of sequence of PointT\\
+shipSunk : integer \\
+switchTurn : boolean \\
+possible\_ships = \{ 2, 3, 3, 4, 5 \}
+
+\subsubsection* {State Invariant}
+
+$|$ board $|$ = MAX\_BOARD\_ROWS \\
+$|$ board [ 0 ... $|$board$|$ -1 ] $|$ = MAX\_BOARD\_COLUMNS \\
+$|$ shipList $|$ $\leq$ SHIP\_NUMBER
+
+\subsubsection* {Assumptions}
+
+The constructor BoardT is called for each abstract object before any other access routine is called for that
+object.  The constructor cannot be called on an existing object.
+
+\subsubsection* {Access Routine Semantics}
+
+\noindent boardT():
+\begin{itemize}
+\item transition: 
+$$ board := 
+< \begin{array}{c}
+< \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE} >\\
+< \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE} >\\
+< \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE} >\\
+< \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE} >\\
+< \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE} >\\
+< \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE} >\\
+< \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE} >\\
+< \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE} >\\
+< \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE}, \mbox{FREE} >\\
+\end{array} >
+$$
+\item output: $out := \mathit{self}$
+\item exception: $exc := none $
+\end{itemize}
+
+\noindent placeShip($size$, $start$, $end$):
+\begin{itemize}
+\item transition:  $ \mathit{board} := (\mbox{is\_valid\_ship}(size, start, end, \mbox{board}) = 1 \Rightarrow (\forall ( i :\mathbb{N} | (i \leq \mbox{end.\mbox{ycrd}()} \Rightarrow (\mbox{board}[beg.\mbox{xcrd}()][(beg.\mbox{ycrd}()+i)] = \mbox{SHIP}))))| (\forall ( i :\mathbb{N} | (i \leq \mbox{end.\mbox{xcrd}()} \Rightarrow \mbox{board}[beg.\mbox{xcrd}()+i][beg.\mbox{ycrd}()] = \mbox{SHIP}))))$
+\item output: $tempShip : = (\mbox{is\_valid\_ship}(size, start, end, \mbox{board}) = 1 \Rightarrow (\forall ( i :\mathbb{N} | (i \leq \mbox{end.\mbox{ycrd}()} \Rightarrow \mbox{tempShip} || (\mbox{board}[beg.\mbox{xcrd}(),(beg.\mbox{ycrd}()+i)])))| (\forall ( i :\mathbb{N} | (i \leq \mbox{end.\mbox{xcrd}()} \Rightarrow \mbox{tempShip} || (\mbox{board}[beg.\mbox{xcrd}()][beg.\mbox{ycrd}()+i]))))))$
+\item exception $exc := (\mbox{is\_valid\_ship}(size, start, end, board) \Rightarrow \mbox{InvalidMove}, \mbox{OutOfBoundsException}, \mbox{InvalidShip}$)
+\end{itemize} 
+
+\noindent shotTaken($move$, $opBoard$):
+\begin{itemize}
+\item transition: $\mathit{opBoard} := (\mbox{is\_valid\_move}(move, board) \wedge (\mbox{opBoard}[move.\mbox{xcrd}()][move.\mbox{ycrd}()] = \mbox{SHIP} \Rightarrow (\mbox{opBoard}[move.\mbox{xcrd}()][move.\mbox{ycrd}()] = \mbox{HIT} , opBoard.\mbox{getShipList}()[0..move.\mbox{xcrd}()-1][0..move.\mbox{ycrd}()-1] || opBoard.\mbox{getShipList}()[move.\mbox{xcrd}()+1..|shipList|-1][move.\mbox{ycrd}()+1..|move.\mbox{xcrd}()|-1] | \mbox{opBoard}[move.\mbox{xcrd}()][move.\mbox{ycrd}()] = \mbox{MISS}))),\\switch := \neg (switchTurn) \\
+ traceShot := (\mbox{is\_valid\_move}(move, board) \Rightarrow (traceShot || move)) $
+\item exception $exc := (\mbox{is\_valid\_move}(move, board) \Rightarrow \mbox{InvalidMove}, \mbox{OutOfBoundsException}$)
+\end{itemize}
+
+\noindent getTraceShot():
+\begin{itemize}
+\item output $out := traceShot$
+\item exception $exc := none$
+\end{itemize}
+
+\noindent getBoard():
+\begin{itemize}
+\item output $out := board$
+\item exception $exc := none$
+\end{itemize}
+
+\noindent addToShipList($ship$):
+\begin{itemize}
+\item transition $shipList := shipList || ship$
+\item exception $exc := none$
+\end{itemize}
+
+\noindent getShipList():
+\begin{itemize}
+\item output $out := shipList$
+\item exception $exc := none$
+\end{itemize}
+
+\noindent hasSunk($ship$):
+\begin{itemize}
+\item transition $ shipSunk := (ship \in \mbox{shipList} \Rightarrow |ship| = 0 \Rightarrow shipSunk+1)$
+\item exception $exc := none$
+\end{itemize}
+
+\noindent turn():
+\begin{itemize}
+\item output $ out := switchTurn $
+\item exception $exc := none$
+\end{itemize}
+
+\noindent isLosing():
+\begin{itemize}
+\item output $out := (shipSunk = \mbox{SHIP\_NUMBER} \Rightarrow True)$
+\item exception $exc := (shipSunk > \mbox{SHIP\_NUMBER} \Rightarrow InvalidShip)$)
+\end{itemize}
+
+\noindent chances():
+\begin{itemize}
+\item output $out := ((shipSunk / \mbox{SHIP\_NUMBER})*100)$
+\item exception $exc := none$
+\end{itemize}
+
+\subsubsection* {Local Types}
+
+board = sequence [\mbox{MAX\_BOARD\_ROWS}, \mbox{MAX\_BOARD\_COLUMNS}] of PointT\\
+tempShip = sequence of PointT\\
+
+\subsubsection* {Local Functions}
+
+\noindent \textbf{is\_valid\_ship} : integer $\times$ PointT $\times$ Point $\times$ boardT $\rightarrow$ integer\\
+
+~\newline
+
+is\_valid\_ship$(size, start, end, board) \equiv ((size \not \in \mbox{possible\_ships} \Rightarrow \mbox{InvalidShip}) \vee ((end.\mbox{ycrd}() > \mbox{MAX\_BOARD\_COLUMNS} \vee start.\mbox{ycrd}() > \mbox{MAX\_BOARD\_COLUMNS} ) \Rightarrow \mbox{OutOfBoundsException}) \vee ((end.\mbox{xcrd}() > \mbox{MAX\_BOARD\_ROWS} \vee start.\mbox{xcrd}() > \mbox{MAX\_BOARD\_ROWS})  \Rightarrow \mbox{OutOfBoundsException}) \vee ((end \in \mbox{shipList} \vee start \in \mbox{shipList})  \Rightarrow \mbox{InvalidMove}) \vee ((end.\mbox{xcrd}() \ne start.\mbox{xcrd}()) \vee (end.\mbox{ycrd}() \ne start.\mbox{ycrd}()) \Rightarrow \mbox{InvalidShip}) \vee (end.\mbox{xcrd}() = start.\mbox{xcrd}() \Rightarrow 1 | 2))$ \\
+
+~\newline
+
+\noindent \textbf{is\_valid\_move} : Point $\times$ boardT $\rightarrow$ boolean\\
+
+~\newline
+
+is\_valid\_move$(move, board) \equiv (((end.\mbox{ycrd}() > \mbox{MAX\_BOARD\_COLUMNS} \vee start.\mbox{ycrd}() > \mbox{MAX\_BOARD\_COLUMNS})  \Rightarrow \mbox{OutOfBoundsException}) \vee ((end.\mbox{xcrd}() > \mbox{MAX\_BOARD\_ROWS} \vee start.\mbox{xcrd}() > \mbox{MAX\_BOARD\_ROWS})  \Rightarrow \mbox{OutOfBoundsException}) \vee ((end \in \mbox{board} \vee start \in \mbox{board} ) \Rightarrow \mbox{InvalidMove}) \vee True)$ \\
+
+\end {document}
+
